@@ -1,4 +1,4 @@
-;	Constructions v0.2.12
+;	Constructions v0.2.32
 ;	-A layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan
@@ -7,7 +7,11 @@
 
 ;define the "jump-to" layer
 (setq jump_to_layer "constructions")	
+(setq cst_crosshair_color 111111)
 
+
+;load required stuff
+(vl-load-com)
 
 ;error handing - cleans up if things go awry
 (defun *error* (msg)
@@ -45,16 +49,25 @@
 	(princ)
 	)
 
-;TODO?: Destroy constructions
-; (maybe this stuff isn't such a good idea, prolly just cruft)
-; idea was to give a reminder before deleting something you'd forgotten about
-	;toggle layerisolate mode to Off
-	;isolate the constructions layer
-	;save zoom state
-	;zoom to extents
-	;ask user for easy confirmation (N to stop or similar)
-	;if yes -> select all objects, erase
-	;if no -> don't
-	;zoom back to saved state
-	;unisolate the constructions layer
-	;toggle layerisolate mode to Fade
+;change crosshairs to different color
+(defun c:crosshair_color()
+	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
+
+	;save old crosshair colors
+	(setq old_model_color (vla-get-ModelCrosshairColor pref_pointer))
+	(setq old_layout_color (vla-get-LayoutCrosshairColor pref_pointer))
+
+	;set mouse color (layout) to...
+	(vla-put-layoutcrosshaircolor pref_pointer
+		(vlax-make-variant cst_crosshair_color vlax-vblong)
+	)
+
+	;set mouse color (modelspace) to...
+	(vla-put-modelcrosshaircolor pref_pointer
+		(vlax-make-variant cst_crosshair_color vlax-vblong)
+	)
+
+	;clean up
+	(vlax-release-object pref_pointer)
+	(princ)
+	)
