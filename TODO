@@ -1,0 +1,27 @@
+Todo:
+
+-look at OL behavior when layer 1 is active, a layer 2 object is selected, and then cst is run.  Does this set layer 1 as OL, or layer 2?  Perhaps this would be a desirable thing.  It would make selecting the OL much easier (at the cost of confusing people even more?).
+
+change commands to use ` key?
+	I don't think it's assigned to anything by default.  Good use of pinky, rolling towards the spacebar.
+	
+	construct - `
+	destruct - ``e
+		note: double `, or a confirmation dialogue to prevent unanticipated deletions?  perhaps a visual indicator of what will be deleted?  or just stick to the the mighty undo?
+
+make crosshair change color when in constructions layer - perhaps a nice magenta
+
+better documentation
+
+copy to constructions command: `c
+move to constructions command: `v or `m or ``c
+
+copy from constructions command? (& move from)
+	I'm on the fence about this.  would it encourage sloppy use?  Ideally they should just toggle over to OL and create the object there.
+		then again, it would increase flexibility.   Probably need more testing time with this before deciding.
+
+isolate constructions command: `s?
+
+toggle constructions layer on/off: `t? `h? `f?
+
+toggle constructions printing property?: low low priority.

@@ -1,77 +1,60 @@
-;	Constructions v0.1.11
-;	-An AutoCAD layer multitasker
+;	Constructions v0.2.12
+;	-A layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan
-;	MIT license (see bottom of file for boring license text).
-;
-;
-;	This script creates ojbects in a pre-specified layer, then
-; 	jumps back to the original layer after the object is created.
-;
-;	You can change the "jump-to" layer in the first line of code.
-;
-;	Built-in Layer Jump! commands
-;		x2 = draw xlines in "jump-to" layer
-;		ra2 = draw rays in "jump-to" layer
-;
-;	Its simple to edit/create your own "layer-jump" command wrappers
-;	at the bottom of the file
-;
-;TODO: add in a clear layer-jump layer function (perhaps with layerisolate and select all?)
-; maybe makes use of a pause after object selection that asks if user wants to proceed.
-;
-;Todo: add in a popd & pushd functionality that works with constructions layer.
+;	GPLv3 license
 
 
+;define the "jump-to" layer
+(setq jump_to_layer "constructions")	
 
-;define the "jump-to" layer, default is "constructions"
-(setq jump_to_layer "constructions")
 
 ;error handing - cleans up if things go awry
 (defun *error* (msg)
 	(setvar "cmdecho" 0)
-	(command "_.layer" "set" jump_from_layer "")
-	(setvar "clayer" jump_from_layer)
-	(setvar "cmdecho" current_echo)
+;	(setvar "clayer" original_layer)
 	(princ msg)
 	(princ)
 )
 
-;the layer jump logic
-(defun layer_jump(command_to_run)
+(defun jump_in()
 	;get current echo state and current layer -> save for later
-	(setq current_echo (getvar "cmdecho"))
-	(setq jump_from_layer (getvar "clayer"))
+	(setq original_layer (getvar "clayer"))
+	;Create/change the layer
+	(command "_.layer" "make" jump_to_layer "color" "Magenta" "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" "0.1" "" "")
+	(princ)
+	)
 
-	;turn off echo
-	(setvar "cmdecho" 0)
+(defun jump_out()
+	;this "if" ensures that you don't get stuck in the jump_to_layer
+	(if (= original_layer jump_to_layer) (setq original_layer "0"))
+	(setvar "clayer" original_layer)
+	(princ)
+	)
 
-	;Create/change the layer and turn off command echo
-	(command "_.layer" "new" jump_to_layer "")
-	(command "_.layer" "set" jump_to_layer "")		
-	(setvar "cmdecho" 1)
+(defun c:cst()
+	(if (= (getvar "clayer") jump_to_layer) (jump_out) (jump_in))
+	(princ)
+	)
 
-	;run specified command, continue until stopped
-	(command command_to_run)
-		(while (= 1 (logand (getvar "CMDACTIVE") 1)) (command PAUSE))
+; destroy jump_to_layer
+(defun c:dst ()
+	;the if ensures that you don't accidentally try to nuke the current layer.
+	(if (= (getvar "clayer") jump_to_layer) (setvar "clayer" original_layer))
+	(command "_laydel" "_n" jump_to_layer "" "yes")
+	(princ)
+	)
 
-	;put layer and echo state back the way they were
-	(setvar "cmdecho" 0)
-	(command "_.layer" "set" jump_from_layer "")
-	(setvar "clayer" jump_from_layer)
-	(setvar "cmdecho" current_echo)
-)
-
-;The XLINE wrapper
-(defun c:x2()
-(layer_jump "xline")
-(princ)
-)
-
-;The RAY wrapper
-(defun c:ra2()
-(layer_jump "ray")
-(princ)
-)
-
-;Create your own wrappers!
+;TODO?: Destroy constructions
+; (maybe this stuff isn't such a good idea, prolly just cruft)
+; idea was to give a reminder before deleting something you'd forgotten about
+	;toggle layerisolate mode to Off
+	;isolate the constructions layer
+	;save zoom state
+	;zoom to extents
+	;ask user for easy confirmation (N to stop or similar)
+	;if yes -> select all objects, erase
+	;if no -> don't
+	;zoom back to saved state
+	;unisolate the constructions layer
+	;toggle layerisolate mode to Fade

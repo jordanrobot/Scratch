@@ -1,0 +1,25 @@
+	Constructions Changelog
+	Copyright (c) 2009 Matthew D. Jordan
+
+
+
+---
+v0.2.12
+
+Removed: The old structure, wrappers, the big layer_jump command
+
+Changed: jump_from_layer to original_layer.  That's so much easier to read.
+
+Added: construct (cst) command - This command toggles the active layer between constructions and original_layer.  This is where the original_layer variable is assigned.
+
+Added: destruct (dst) command - This command deletes the constructions layer.  It will change the user back to original_layer before doing so.
+
+Added: internal "jump_in" function - jumps into the "constructions" layer.  For all intents and purposes, jump_in creates the constructions layer each time, so if the layer does not exist, it will be created.
+
+Added: internal "jump_out" function - It jumps back to the layer that was active when the last jump_in was run (original_layer).  If the original_layer variable is not set, it is defaulted to layer 0.
+
+
+---
+v0.1.11
+
+Initial commit to git after playing around with some layer selection script ideas for AutoCAD.
