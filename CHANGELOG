@@ -1,6 +1,12 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+---
+v0.3.0
+
+Added: Crosshair color changes with layer toggle.  Crosshair color is settable.
+Revised: Logic for creation, switching, and destruction of layer
+
 
 ---
 v0.2.32

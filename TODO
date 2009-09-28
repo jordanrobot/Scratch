@@ -6,16 +6,7 @@ Structure:
 
 -look at OL behavior when layer 1 is active, a layer 2 object is selected, and then cst is run.  Does this set layer 1 as OL, or layer 2?  Perhaps this would be a desirable thing.  It would make selecting the OL much easier (at the cost of confusing people even more?).
 
--make crosshair change color when in constructions layer
-	--perhaps a nice gaudy magenta?
-
 -make color user settable?
-
--use cst_state flag & change c:cst & c:dst to conditional logic
-	--makes it easier to set crosshair color
-	--(= cst_state (or 0 nil)) -> cst layer does not exist
-	--(= cst_state 1) -> cst layer is created, active
-	--(= cst_state 2) -> cst layer is created, not active
 
 
 ---
