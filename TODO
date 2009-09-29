@@ -2,12 +2,19 @@
 	Copyright (c) 2009 Matthew D. Jordan
 
 ---
+Bugs:
+
+
+---
 Structure:
 
--look at OL behavior when layer 1 is active, a layer 2 object is selected, and then cst is run.  Does this set layer 1 as OL, or layer 2?  Perhaps this would be a desirable thing.  It would make selecting the OL much easier (at the cost of confusing people even more?).
+-look at OL behavior when layer 1 is active, a layer 2 object is selected, and then cst is run. 
+	--ends up running cst in the background
+	
+-make jump_layer_color user settable?
 
--make color user settable?
-
+-change crosshair color back to dynamic, not hardcoded
+-make crosshair color a decision tree
 
 ---
 Commands:
@@ -15,12 +22,12 @@ Commands:
 -change commands to use ` key?
 	--I don't think it's assigned to anything by default.
 	--Good use of pinky, rolling towards the spacebar.
-	--construct - `
-	--destruct - ``e
+	--construct - c`
+	--destruct - e``
 		---note: double `, or a confirmation dialogue to prevent unanticipated deletions?  perhaps a visual indicator of what will be deleted?  or just stick to the the mighty undo?
 
--copy to constructions command: `c
--move to constructions command: `v or `m or ``c
+-copy to constructions command: x` or r` or cc`?
+-move to constructions command: x` or m`
 
 -copy from constructions command? (& move from)
 	--I'm on the fence about this.  would it encourage sloppy use?  
@@ -28,9 +35,9 @@ Commands:
 	--then again, it would increase flexibility.
 	--Probably need more real use testing before deciding.
 
--isolate constructions command: `s?
+-isolate constructions command: s`
 
--toggle constructions layer on/off: `t? `h? `f?
+-toggle constructions layer on/off: t` or h` or f`
 
 -toggle constructions printing property?: low low priority.
 
@@ -53,3 +60,4 @@ Commands:
 Documentation:
 
 -Make documentation suitable for end users
+-Make a system plan for coders.

@@ -1,17 +1,30 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+
+---
+v0.3.38
+
+Removed: init_flag variable
+Added: a test for constructions layer exists? - replaces init_flag
+Bugfix: When crosshair is colored, and reloads lisp file, the reloaded constructions file takes magenta as the old_crosshair_color(s).  The standard crosshair colors are now hardcoded
+Bugfix: When reloading lisp file and current layer is constructions - constructions is taken as the original_layer.  Added if tablesearch... in make_cst function to fix.
+Bugfix: Quashed stupid extra parenthesis bug that was causing erratic behavior.
+Changed: updated TODO
+Added: a DOC file, documentation. In progress.
+
+
 ---
 v0.3.0
 
 Added: Crosshair color changes with layer toggle.  Crosshair color is settable.
-Revised: Logic for creation, switching, and destruction of layer
+Changed: Logic for creation, switching, and destruction of layer
 
 
 ---
 v0.2.32
 
-Changed: Todo file, restructured, added
+Changed: TODO file, restructured, added
 Added: a function to change the crosshair color.  Right now it only changes to a certain color.
 Added: plans for a cst_state flag.
 

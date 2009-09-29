@@ -1,0 +1,75 @@
+	Constructions v0.3.6 Documentation
+	Copyright (c) 2009 Matthew D. Jordan
+
+---
+System Structure:
+
+blah blah
+
+---
+Variables:
+
+-init_flag (0 or 1)
+	--soon to be deprecated
+	--used to identify if jump_to_layer has been created
+	--defined at lisp load
+	--redefined each time the jump_to_layer is created or destroyed
+
+-jump_to_layer:
+	--contains the name of the temporary constructions layer that is invoked when cst is run
+	--the user can change the value of this variable
+	--defined once at lisp load
+
+-jump_to_layer_color: (planned, not implemented yet)
+	--layer color for the temporary constructions layer
+	--the user can change the value of this variable
+	--defined at lisp load
+	--defined once at lisp load
+
+-jump_to_layer_lineweight: (planned, not implemented yet)	
+	--layer lineweight for the temporary constructions layer
+	--the user can change the value of this variable
+	--defined once at lisp load
+
+-jump_to_layer_plot: (planned, not implemented yet)
+	--layer plot property for the temporary constructions layer
+	--the user can change the value of this variable
+	--defined once at lisp load
+
+-cst_crosshair_color
+	--contains the color (OLD format) that the crosshair will change
+		to when the cst command is run.
+	--used in functions:
+		cst_crosshair_on
+		cst_crosshair_off
+	--the user can change the value of this variable
+	--defined once at lisp load
+
+-original_layer
+	--placeholder for the current layer before cst is run
+	--is restored as the current layer when the jump_to_layer is made inactive
+	--this variable is accessed and assigned throughout the program
+
+-old_model_color
+-old_layout_color
+-pref_pointer
+
+---
+Command Functions:
+
+-cst
+-dst
+
+---
+Internal Functions:
+
+-jump_in()
+-jump_out()
+-cst_make()
+-cst_delete()
+
+-cst_crosshair_on()
+-cst_crosshair_off()
+
+-*error* (msg)
+
