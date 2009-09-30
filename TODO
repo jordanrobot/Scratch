@@ -3,15 +3,12 @@
 
 ---
 Bugs:
-
+	dst (laydel) pops up text window when deleting blocks or dimensions.  Rewrite using cst_clean & purge command
+	cannot purge after dimensions have been created on that layer.!!!!
+	
 
 ---
 Structure:
-
--look at OL behavior when layer 1 is active, a layer 2 object is selected, and then cst is run. 
-	--ends up running cst in the background
-	
--make jump_layer_color user settable?
 
 -change crosshair color back to dynamic, not hardcoded
 -make crosshair color a decision tree
@@ -19,8 +16,21 @@ Structure:
 ---
 Commands:
 
+
+
+below - bah!
+cst - create/switch
+dst - clear/delete
+fst - full cst menu
+	isolate
+	on/off
+	delete
+	clean
+	copy from/to
+	move from/to
+
+
 -change commands to use ` key?
-	--I don't think it's assigned to anything by default.
 	--Good use of pinky, rolling towards the spacebar.
 	--construct - c`
 	--destruct - e``

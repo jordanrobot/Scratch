@@ -3,6 +3,15 @@
 
 
 ---
+v0.3.58
+
+Changed: renamed some variables and functions to make more sense
+Added: cst_getall function - doesn't do much, but is basis for cst_clean
+Added: cst_clean function, deletes all objects in layer (not block references though. :< )
+Added: fst command, will be for menu, right now points to cst_delete
+Added: cst_menu function, right now points to cst_delete
+
+---
 v0.3.38
 
 Removed: init_flag variable
