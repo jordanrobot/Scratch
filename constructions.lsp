@@ -1,4 +1,4 @@
-;	Constructions v0.3.58
+;	Constructions v0.3.97
 ;	-A temporary layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
@@ -6,7 +6,8 @@
 ;    The authorship and url must remain with the copied function. 
 
 ; define the "jump-to" layer
-(setq cst_lay "constructions")	
+(setq cst_lay "constructions")
+
 ; set the crosshair color
 (setq cst_crosshair 16711935)
 (setq model_crosshair_color 16777215)
@@ -16,6 +17,7 @@
 (vl-load-com)
 (setvar "cmdecho" 0)
 
+;if color is magenta, turn it white!
 
 ;set initial crosshair color settings
 ;(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
@@ -25,7 +27,7 @@
 ;(vlax-release-object pref_pointer)
 
 
-;logic wrapper for cst_lay creation & switching
+;creates & switches layers - wrapper logic
 (defun c:cst()
 	(if 
 		;if the layer constructions exists...
@@ -35,24 +37,39 @@
 			(cst_jumpout)
 			(cst_jumpin)
 			)
-		;back to the first if, (no constructions layer, then create it!)
+		;back to the first if, (no constructions layer?, then create it!)
 		(cst_make)
 		)
 	(princ)
 	)
 
-;logic wrapper for cst_lay clean
+
+;cleans the constructions layer of all objects
 (defun c:dst()
 	(if (tblsearch "LAYER" "constructions") (cst_clean) ())
 	(princ)
 	)
 
-(defun c:fst()
 
-	;if no cst_lay, 
-	(cst_menu)
-	(princ)
-	)
+;the cst utilites: delete constructions layer, copy, move...
+(defun c:fst( / cst_option)
+
+	;abort if the constructions layer is not present
+	(if (not (tblsearch "LAYER" cst_lay)) (quit))
+	
+	(cst_jumpout)
+	
+	(initget "d c m x t" )
+	(setq cst_option (getkword "\nEnter Option: Delete/Copy/Move/[eXit]:"))
+	;(if (= temp nil) (setq cst_option temp))
+	
+	(if (= cst_option "d") (cst_delete))
+	(if (= cst_option "c") (prompt "copying!")) ;head for copy menu (to cst_lay/origlay)
+	(if (= cst_option "m") (prompt "movin!")) ;head for move menu (to cst_lay/origlay)
+	(if (= cst_option "x") (quit))
+	(if (= cst_option nil) (cst_delete))
+)
+
 
 (defun cst_jumpin()
 	;get current layer -> save for later
@@ -71,6 +88,7 @@
 	(cst_crosshair_off)
 	)
 
+
 (defun cst_make()
 	;Get current layer -> save for later
 	(if (tblsearch "LAYER" "constructions") () (setq cst_origlay (getvar "clayer")))
@@ -80,36 +98,20 @@
 	(cst_crosshair_on)
 	)
 
+
 (defun cst_delete()
 	(cst_jumpout)
-	(cst_clean)
 	(command "_laydel" "n" cst_lay "" "yes")
-;	(command "-purge" "layer" cst_lay "yes" "")
-	)
-
-(defun cst_getall()
-	(sssetfirst nil (ssget "X" (list (cons 8 cst_lay))))
 	)
 
 
-(defun cst_clean( / mySet)
+(defun cst_clean( / tempSet)
 	(cst_jumpout)
-	(if (setq mySet(ssget "X" (list (cons 8 cst_lay))))
+	(if (setq tempSet(ssget "X" (list (cons 8 cst_lay))))
 		(command "_erase" mySet "")
 		)
 	)
 
-;(defun cst_isolate()
-;)
-
-;(defun cst_off()
-;turn off
-;if in, jump out
-;)
-
-(defun cst_menu()
-	(cst_delete)
-	)
 
 ;crosshair color on
 (defun cst_crosshair_on()

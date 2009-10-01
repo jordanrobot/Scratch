@@ -1,6 +1,7 @@
 	Constructions Todo
 	Copyright (c) 2009 Matthew D. Jordan
 
+
 ---
 Bugs:
 	dst (laydel) pops up text window when deleting blocks or dimensions.  Rewrite using cst_clean & purge command
@@ -13,31 +14,12 @@ Structure:
 -change crosshair color back to dynamic, not hardcoded
 -make crosshair color a decision tree
 
+
 ---
 Commands:
 
+TODO: modify cst - turn layer on if off
 
-
-below - bah!
-cst - create/switch
-dst - clear/delete
-fst - full cst menu
-	isolate
-	on/off
-	delete
-	clean
-	copy from/to
-	move from/to
-
-
--change commands to use ` key?
-	--Good use of pinky, rolling towards the spacebar.
-	--construct - c`
-	--destruct - e``
-		---note: double `, or a confirmation dialogue to prevent unanticipated deletions?  perhaps a visual indicator of what will be deleted?  or just stick to the the mighty undo?
-
--copy to constructions command: x` or r` or cc`?
--move to constructions command: x` or m`
 
 -copy from constructions command? (& move from)
 	--I'm on the fence about this.  would it encourage sloppy use?  
@@ -45,14 +27,8 @@ fst - full cst menu
 	--then again, it would increase flexibility.
 	--Probably need more real use testing before deciding.
 
--isolate constructions command: s`
-
--toggle constructions layer on/off: t` or h` or f`
-
--toggle constructions printing property?: low low priority.
-
 -Destroy constructions
-	--give a reminder/visual indication of what you're deleting
+	--give a reminder/visual indication of what you're deleting?????
 	--(maybe this stuff isn't such a good idea, prolly just cruft)
 		---toggle layerisolate mode to Off
 		---isolate the constructions layer

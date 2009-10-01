@@ -3,6 +3,13 @@
 
 
 ---
+v0.3.97
+
+Added: Constructions utilities menu that actually works properly. (fst command)
+Changed: Revised some comments & such small piddly stuff.
+
+
+---
 v0.3.58
 
 Changed: renamed some variables and functions to make more sense

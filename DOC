@@ -1,4 +1,4 @@
-	Constructions v0.3.6 Documentation
+	Constructions v0.3.xx (old) Documentation
 	Copyright (c) 2009 Matthew D. Jordan
 
 ---
@@ -9,22 +9,15 @@ blah blah
 ---
 Variables:
 
--init_flag (0 or 1)
-	--soon to be deprecated
-	--used to identify if jump_to_layer has been created
-	--defined at lisp load
-	--redefined each time the jump_to_layer is created or destroyed
-
--jump_to_layer:
+-cst_lay:
 	--contains the name of the temporary constructions layer that is invoked when cst is run
 	--the user can change the value of this variable
 	--defined once at lisp load
 
--jump_to_layer_color: (planned, not implemented yet)
+-cst_origlay:
 	--layer color for the temporary constructions layer
 	--the user can change the value of this variable
 	--defined at lisp load
-	--defined once at lisp load
 
 -jump_to_layer_lineweight: (planned, not implemented yet)	
 	--layer lineweight for the temporary constructions layer
@@ -59,14 +52,19 @@ Command Functions:
 
 -cst
 -dst
+-fst
 
 ---
 Internal Functions:
 
--jump_in()
--jump_out()
+-cst_jumpin()
+-cst_jumpout()
 -cst_make()
 -cst_delete()
+-cst_clean()
+-cst_copy (planned?)
+-cst_move (planned?)
+
 
 -cst_crosshair_on()
 -cst_crosshair_off()
