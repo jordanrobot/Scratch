@@ -1,23 +1,33 @@
-;	Constructions v0.3.131
+;	Constructions v0.4.0
 ;	-A temporary layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
 ;	This file is provided "as is" by the author.
 ;    The authorship and url must remain with the copied function. 
 
+
 ; define the "jump-to" layer
 (setq cst_lay "constructions")
 
+
 ; set the crosshair color
-(setq cst_crosshair 16711935)
+(setq cst_crosshair 16711935) ; magenta
 (setq model_crosshair_color 16777215)
-(setq layout_crosshair_color 1)
+(setq layout_crosshair_color 0)
+
 
 ;load misc stuff
 (vl-load-com)
-(setvar "cmdecho" 1)
+(setvar "cmdecho" 0)
 
-;if color is magenta, turn it white!
+
+;todo => better dynamic color switcher!
+
+;;;old color code: gets the current colors, and saves them for later.  Now this is buggy when 
+;;; the cursor is magenta, and you switch to another drawing.  The variables seem to be local
+;;; to each drawing.  I'm sure there's a way around this without forcing a black/white cursor
+;;; on the user.
+
 
 ;set initial crosshair color settings
 ;(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
@@ -29,9 +39,10 @@
 
 ;creates & switches layers - wrapper logic
 (defun c:cst()
+	(setvar "cmdecho" 0)
 	(if 
 		;if the layer constructions exists...
-		(tblsearch "LAYER" "constructions")
+		(tblsearch "LAYER" cst_lay)
 		; then if constructions is the current layer... jump out, else jump in
 		(if (= cst_lay (getvar "clayer"))
 			(cst_jumpout)
@@ -44,53 +55,15 @@
 	)
 
 
-;cleans the constructions layer of all objects
+;delete the cst_layer
 (defun c:dst()
-	(if (tblsearch "LAYER" "constructions") (cst_clean) ())
-	(princ)
-	)
-
-
-;the cst utilites: delete constructions layer, copy, move...
-(defun c:fst( / cst_option temp_set)
-
+	(setvar "cmdecho" 0)
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cst_lay)) (quit))
-	
 	(cst_jumpout)
-	
-	(initget "d c c` m m` x t" )
-	(setq cst_option (getkword "\nEnter Option: Delete/Copy/Move/[eXit]:"))
-	
-	(if (= cst_option "d") (cst_delete))
-	;copy to original layer
-	(if (= cst_option "c") (progn (setq temp_set (ssget)) (command "_copy" "")))
-	;head for copy menu (to cst_lay/origlay)
-	(if (= cst_option "m") (progn (setq temp_set (ssget)) (command ".chprop" "_p" "" "_la" cst_lay "")))
-	(if (= cst_option "m`") (progn (setq temp_set (ssget)) (command ".chprop" "_p" "" "_la" cst_origlay "")))
-	(if (= cst_option "x") (quit))
-	(if (= cst_option nil) (cst_delete))
-)
+	(cst_delete)
+	)
 
-
-;progn (setq temp_set (ssget))
-
-;;(defun cst_getallcst (/ temp)
-;;	(setq temp (ssget '((8 . (cst_lay)))))
-
-;;	(ssget "_X" 
-;;	  '((0 . "RAY")(8 . "TEMP"))
-;;	)
-
-;;(ssget "_X" '((8 . ))
-
-
-
-;;	(command "_copy" temp )
-		;;if selection is blank, do not allow, otherwise continue
-;;		(if (not (eq DimObject nil))
-;;		)
-;;	)
 
 (defun cst_jumpin()
 	;get current layer -> save for later
@@ -126,14 +99,6 @@
 	)
 
 
-(defun cst_clean( / tempSet)
-	(cst_jumpout)
-	(if (setq temp_set(ssget "X" (list (cons 8 cst_lay))))
-		(command "_erase" temp_set "")
-		)
-	)
-
-
 ;crosshair color on
 (defun cst_crosshair_on()
 	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
@@ -143,7 +108,6 @@
 	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant cst_crosshair vlax-vblong))
 	;clean up stuff
 	(vlax-release-object pref_pointer)
-	(princ)
 	)
 
 
@@ -156,14 +120,15 @@
 	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant model_crosshair_color vlax-vblong))
 	;clean up stuff
 	(vlax-release-object pref_pointer)
-	(princ)
 	)
 
 ;error handing - cleans up if things go awry
 (defun *error* (msg)
 	(setvar "cmdecho" 1)
+	(if (eq cst_origlay (or cst_lay nil))
+		(setvar "clayer" cst_origlay)
+		)
 	(cst_crosshair_off)
-	(setvar "clayer" cst_origlay)
 	(princ msg)
 	(princ)
 	)

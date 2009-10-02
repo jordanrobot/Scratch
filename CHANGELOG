@@ -1,6 +1,15 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+
+v0.4.0
+---
+
+The build numbers are going up, but the features are going down!
+Cleaned for release to friends.
+Removed: cst_clean & fst.  They are only duplicate functionality now.
+
+
 ---
 v0.3.131
 
