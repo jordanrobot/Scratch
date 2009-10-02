@@ -1,6 +1,12 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+---
+v0.3.131
+
+Changed: more workings on menu.
+NOTE: This commit marks the removal of the menu.  It just doesn't add enough value to the user for the extra crap to learn.
+
 
 ---
 v0.3.97

@@ -1,4 +1,4 @@
-;	Constructions v0.3.97
+;	Constructions v0.3.131
 ;	-A temporary layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
@@ -15,7 +15,7 @@
 
 ;load misc stuff
 (vl-load-com)
-(setvar "cmdecho" 0)
+(setvar "cmdecho" 1)
 
 ;if color is magenta, turn it white!
 
@@ -52,24 +52,45 @@
 
 
 ;the cst utilites: delete constructions layer, copy, move...
-(defun c:fst( / cst_option)
+(defun c:fst( / cst_option temp_set)
 
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cst_lay)) (quit))
 	
 	(cst_jumpout)
 	
-	(initget "d c m x t" )
+	(initget "d c c` m m` x t" )
 	(setq cst_option (getkword "\nEnter Option: Delete/Copy/Move/[eXit]:"))
-	;(if (= temp nil) (setq cst_option temp))
 	
 	(if (= cst_option "d") (cst_delete))
-	(if (= cst_option "c") (prompt "copying!")) ;head for copy menu (to cst_lay/origlay)
-	(if (= cst_option "m") (prompt "movin!")) ;head for move menu (to cst_lay/origlay)
+	;copy to original layer
+	(if (= cst_option "c") (progn (setq temp_set (ssget)) (command "_copy" "")))
+	;head for copy menu (to cst_lay/origlay)
+	(if (= cst_option "m") (progn (setq temp_set (ssget)) (command ".chprop" "_p" "" "_la" cst_lay "")))
+	(if (= cst_option "m`") (progn (setq temp_set (ssget)) (command ".chprop" "_p" "" "_la" cst_origlay "")))
 	(if (= cst_option "x") (quit))
 	(if (= cst_option nil) (cst_delete))
 )
 
+
+;progn (setq temp_set (ssget))
+
+;;(defun cst_getallcst (/ temp)
+;;	(setq temp (ssget '((8 . (cst_lay)))))
+
+;;	(ssget "_X" 
+;;	  '((0 . "RAY")(8 . "TEMP"))
+;;	)
+
+;;(ssget "_X" '((8 . ))
+
+
+
+;;	(command "_copy" temp )
+		;;if selection is blank, do not allow, otherwise continue
+;;		(if (not (eq DimObject nil))
+;;		)
+;;	)
 
 (defun cst_jumpin()
 	;get current layer -> save for later
@@ -107,8 +128,8 @@
 
 (defun cst_clean( / tempSet)
 	(cst_jumpout)
-	(if (setq tempSet(ssget "X" (list (cons 8 cst_lay))))
-		(command "_erase" mySet "")
+	(if (setq temp_set(ssget "X" (list (cons 8 cst_lay))))
+		(command "_erase" temp_set "")
 		)
 	)
 
@@ -124,6 +145,7 @@
 	(vlax-release-object pref_pointer)
 	(princ)
 	)
+
 
 ;crosshair color off
 (defun cst_crosshair_off()
