@@ -1,75 +1,102 @@
-;	Constructions v0.4.3
-;	-A temporary layer multitasker for Autocad
+;	Constructions v0.4.45
+;	-A scratchpad layer utility for Autocad
+;
+;	Tested on Autocad 2008-2010
+;	Should be compatible with v2007
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
 ;	This file is provided "as is" by the author.
 ;    The authorship and url must remain with the copied function. 
 
 
-; define the the sketchpad layer
+;#######################################
+;###   Temoporary Layer Properties   ###
+;#######################################
+
+;layer name
 (setq cst_lay "constructions")
+;layer color
 (setq cst_laycol "magenta")
+;lineweight
 (setq cst_laylwt "0.1")
-
-
-; set the crosshair color
-;old -> (setq cst_crosshair 16711935) ; magenta
-(setq model_crosshair_color 16777215)
-(setq layout_crosshair_color 0)
-
+; cst's crosshair color -> default is magenta (OLE color code)
 (vl-bb-set 'cst_crosshair "16711935")
 
+
+;###############################
+;###   Load required stuff   ###
+;###############################
 
 ;load misc stuff
 (vl-load-com)
 (setvar "cmdecho" 0)
 
 
-;todo => better dynamic color switcher!
+; if needed- this backs up the users' colors to the blackboard namespace, which means it will be
+; accessable from any open drawings within an Autocad session.
 
-;;;old color code: gets the current colors, and saves them for later.  Now this is buggy when 
-;;; the cursor is magenta, and you switch to another drawing.  The variables seem to be local
-;;; to each drawing.  I'm sure there's a way around this without forcing a black/white cursor
-;;; on the user.
+(defun cst_backupcol ( / model_color layout_color pref_pointer )
+	
+	;set initial crosshair color settings
+	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
+
+	;save old crosshair colors
+	(setq model_color (vla-get-ModelCrosshairColor pref_pointer))
+	(setq model_color (vlax-make-variant model_color vlax-vblong))
+	(setq model_color (vlax-variant-value model_color))
+
+	(setq layout_color (vla-get-LayoutCrosshairColor pref_pointer))
+	(setq layout_color (vlax-make-variant layout_color vlax-vblong))
+	(setq layout_color (vlax-variant-value layout_color))
+
+	(vl-bb-set 'cst_model_color model_color)
+	(vl-bb-set 'cst_layout_color layout_color)
+
+	(vlax-release-object pref_pointer)
+)
+
+(defun cst_resetcol ()
+	
+	)
+
+;if user crosshair colors are not backed up: then back them up!
+(if (eq (vl-bb-ref 'cst_model_color) nil)
+	(if (eq (vl-bb-ref 'cst_model_color) 16711935)
+		(cst_backupcol)
+		(cst_resetcol)
+		)
+	)
 
 
-;set initial crosshair color settings
-;(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
-;save old crosshair colors
-;(setq old_model_color (vlax-make-variant (vla-get-ModelCrosshairColor pref_pointer) vlax-vblong))
-;(setq old_layout_color (vla-get-LayoutCrosshairColor pref_pointer))
-;(vlax-release-object pref_pointer)
-
-;on load
-;if (= current model_color cst_crosshair) (do nothing) (else set old_crosshair_cols)
-
-;if cst is current layer, then crosshair color should be magenta
-;if (= (getvar "clayer") cst_lay) (turn crosshair magenta) (turn crosshair default) 
+; thar be dragons below!  don't know why, but there are
+;(if (tblsearch "LAYER" cst_lay)
+;if cst_lay is current, then set crosshair to magenta, if not, set to default
+;	(if (= (getvar "clayer") cst_lay)
+;		(cst_crosshair_on)
+;		)
+;	(cst_crosshair_off)
+;	)
 
 
-
-
-;creates & switches layers - wrapper logic
+;The big CST command: decision logic.  Calls other functions based on state of various things.
 (defun c:cst()
-	(setvar "cmdecho" 0)
 	(if 
 		;if the layer constructions exists...
 		(tblsearch "LAYER" cst_lay)
-		; then if constructions is the current layer... jump out, else jump in
+		; & if constructions is the current layer... jump out, else jump in
 		(if (= cst_lay (getvar "clayer"))
 			(cst_jumpout)
 			(cst_jumpin)
 			)
-		;back to the first if, (no constructions layer?, then create it!)
+		;(back to the first if), no constructions layer?, then create it!
 		(cst_make)
 		)
 	(princ)
 	)
 
 
-;delete the cst_layer
+;The bid DST command: decision logic.  Deletes the cst layer if it exists.
 (defun c:dst()
-	(setvar "cmdecho" 0)
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cst_lay)) (quit))
 	(cst_jumpout)
@@ -122,14 +149,13 @@
 	(vlax-release-object pref_pointer)
 	)
 
-
 ;crosshair color off
 (defun cst_crosshair_off()
 	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
-	;set mouse color (layout) to cst_crosshair
-	(vla-put-layoutcrosshaircolor pref_pointer (vlax-make-variant layout_crosshair_color vlax-vblong))
-	;set mouse color (modelspace) to cst_crosshair
-	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant model_crosshair_color vlax-vblong))
+	;set mouse color (layout) to original color
+	(vla-put-layoutcrosshaircolor pref_pointer (vlax-make-variant (vl-bb-ref 'cst_layout_color) vlax-vblong))
+	;set mouse color (modelspace) to original color
+	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant (vl-bb-ref 'cst_model_color) vlax-vblong))
 	;clean up stuff
 	(vlax-release-object pref_pointer)
 	)
