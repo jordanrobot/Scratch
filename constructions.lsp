@@ -1,4 +1,4 @@
-;	Constructions v0.4.0
+;	Constructions v0.4.3
 ;	-A temporary layer multitasker for Autocad
 ;
 ;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
@@ -6,14 +6,18 @@
 ;    The authorship and url must remain with the copied function. 
 
 
-; define the "jump-to" layer
+; define the the sketchpad layer
 (setq cst_lay "constructions")
+(setq cst_laycol "magenta")
+(setq cst_laylwt "0.1")
 
 
 ; set the crosshair color
-(setq cst_crosshair 16711935) ; magenta
+;old -> (setq cst_crosshair 16711935) ; magenta
 (setq model_crosshair_color 16777215)
 (setq layout_crosshair_color 0)
+
+(vl-bb-set 'cst_crosshair "16711935")
 
 
 ;load misc stuff
@@ -32,9 +36,17 @@
 ;set initial crosshair color settings
 ;(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
 ;save old crosshair colors
-;(setq old_model_color (vla-get-ModelCrosshairColor pref_pointer))
+;(setq old_model_color (vlax-make-variant (vla-get-ModelCrosshairColor pref_pointer) vlax-vblong))
 ;(setq old_layout_color (vla-get-LayoutCrosshairColor pref_pointer))
 ;(vlax-release-object pref_pointer)
+
+;on load
+;if (= current model_color cst_crosshair) (do nothing) (else set old_crosshair_cols)
+
+;if cst is current layer, then crosshair color should be magenta
+;if (= (getvar "clayer") cst_lay) (turn crosshair magenta) (turn crosshair default) 
+
+
 
 
 ;creates & switches layers - wrapper logic
@@ -87,7 +99,7 @@
 	;Get current layer -> save for later
 	(if (tblsearch "LAYER" "constructions") () (setq cst_origlay (getvar "clayer")))
 	;Create the cst_lay
-	(command "_.layer" "make" cst_lay "color" "Magenta" "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" "0.1" "" "")
+	(command "_.layer" "make" cst_lay "color" cst_laycol "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" cst_laylwt "" "")
 	;turn crosshair color on
 	(cst_crosshair_on)
 	)
@@ -103,9 +115,9 @@
 (defun cst_crosshair_on()
 	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
 	;set mouse color (layout) to cst_crosshair
-	(vla-put-layoutcrosshaircolor pref_pointer (vlax-make-variant cst_crosshair vlax-vblong))
+	(vla-put-layoutcrosshaircolor pref_pointer (vlax-make-variant (vl-bb-ref 'cst_crosshair) vlax-vblong))
 	;set mouse color (modelspace) to cst_crosshair
-	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant cst_crosshair vlax-vblong))
+	(vla-put-modelcrosshaircolor pref_pointer (vlax-make-variant (vl-bb-ref 'cst_crosshair) vlax-vblong))
 	;clean up stuff
 	(vlax-release-object pref_pointer)
 	)
@@ -121,6 +133,12 @@
 	;clean up stuff
 	(vlax-release-object pref_pointer)
 	)
+
+	
+;	(if (vlax-make-variant (vla-get-ModelCrosshairColor pref_pointer) vlax-vblong) (vlax-make-variant 16777215 vlax-vblong)
+		
+;		)
+	
 
 ;error handing - cleans up if things go awry
 (defun *error* (msg)
