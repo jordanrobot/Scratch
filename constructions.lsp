@@ -1,12 +1,29 @@
-;	Constructions v0.4.94
+;	Constructions v0.4.112
 ;	-A scratchpad layer utility for Autocad
 ;
 ;	Tested on Autocad 2008-2010
 ;	May require Autocad Express Tools
+;	I haven't gotten around to checking compatibility.
 ;
-;	Copyright (c) 2009 Matthew D. Jordan :  http://scenic-shop.com
+;	2009 Matthew D. Jordan :  http://scenic-shop.com
 ;	This file is provided "as is" by the author.
-;    The authorship and url must remain with the copied function. 
+;   The authorship and url must remain with the copied function. 
+;
+;	function: cst_jumpin - jumps into the temporary layer
+;	function: cst_jumpin - jumps into the provious layer
+;	function: cst_backupcol - saves default crosshair colors to blackboard namespace
+;	function: cst_crosshair_on - turns crosshair color on
+;	function: cst_crosshair_off - turns crosshair color off
+;	function: cst_crosshair_grace - reactor based - crosshair color rescue if autocad exits
+;	function: cst_resetcol - resets the crosshair color to user defaults called by cst_crosshair_grace
+;
+;	variable: cst_lay - the temporary constructions layer
+;	variable: cst_laycol - cst_lay's color
+;	variable: cst_laylwt - cst_lay's lineweight
+;	variable: cst_crosshair - the crosshair color when in temporary layer
+;
+;	command: cst - switches between layers, creates if temporary layer doesn't exist
+;	command: dst - deletes temporary layer 
 
 
 ;###############################
@@ -40,29 +57,39 @@
 ;####################
 
 
-;The big CST command: decision logic.  Calls other functions based on state of various things.
+;The big CST command: decision logic.
 (defun c:cst()
-	(if 
-		;if the layer constructions exists...
-		(tblsearch "LAYER" cst_lay)
+	(setvar "cmdecho" 0)
+	;if user crosshair colors are not already backed up: then back them up!
+	(if (eq (vl-bb-ref 'cst_model_color) nil)
+		(cst_backupcol)
+		)
+	;if the layer constructions exists...
+	(if (tblsearch "LAYER" cst_lay)
 		; & if constructions is the current layer... jump out, else jump in
 		(if (= cst_lay (getvar "clayer"))
 			(cst_jumpout)
 			(cst_jumpin)
 			)
-		;(back to the first if), no constructions layer?, then create it!
-		(cst_make)
+		;(back to the first if), no constructions layer - save clayer & then create cst_lay
+		(progn
+			(setq cst_origlay (getvar "clayer"))
+			(command "_.layer" "make" cst_lay "color" cst_laycol "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" cst_laylwt "" "")
+			(cst_crosshair_on)
+			)
 		)
 	(princ)
 	)
 
 
-;The bid DST command: decision logic.  Deletes the cst layer if it exists.
+;The big DST command: decision logic.  Deletes the cst layer if it exists.
 (defun c:dst()
+	(setvar "cmdecho" 0)
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cst_lay)) (quit))
 	(cst_jumpout)
-	(cst_delete)
+	(command "_laydel" "n" cst_lay "" "yes")
+	(princ)
 	)
 
 
@@ -76,7 +103,6 @@
 	(setq cst_origlay (getvar "clayer"))
 	;change to the layer
 	(setvar "clayer" cst_lay)
-	;turn crosshair color on
 	(cst_crosshair_on)
 	)
 
@@ -84,24 +110,7 @@
 (defun cst_jumpout()
 	;change current layer back to original
 	(setvar "clayer" cst_origlay)
-	;turn off crosshair color
 	(cst_crosshair_off)
-	)
-
-
-(defun cst_make()
-	;Get current layer -> save for later
-	(if (tblsearch "LAYER" "constructions") () (setq cst_origlay (getvar "clayer")))
-	;Create the cst_lay
-	(command "_.layer" "make" cst_lay "color" cst_laycol "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" cst_laylwt "" "")
-	;turn crosshair color on
-	(cst_crosshair_on)
-	)
-
-
-(defun cst_delete()
-	(cst_jumpout)
-	(command "_laydel" "n" cst_lay "" "yes")
 	)
 
 
@@ -130,9 +139,10 @@
 
 ; this resets cursor color if anything goes wrong at application exit
 (defun cst_resetcol ()
-	(vl-bb-set 'cst_model_color "16777215")
-	(vl-bb-set 'cst_layout_color "0")
-	(cst_crosshair_off)
+	;if user crosshair colors are not backed up: then back them up!
+	(if (not (eq (vl-bb-ref 'cst_model_color) nil))
+		(cst_crosshair_off)
+		)
 	)
 
 
@@ -166,25 +176,40 @@
 	)
 
 
+;#######################################
+;###   If Autocad Exits   ###
+;#######################################
+;
+;before exit set crosshair back to original color, else all is lost!!!! (or at least the user's crosshair color)
+
+(vlr-command-reactor
+	nil '((:vlr-commandWillStart . cst_crosshair_grace)))
+
+(defun cst_crosshair_grace (calling-reactor startcommandInfo / thecommandstart)
+
+	(setq thecommandstart (nth 0 startcommandInfo))
+	(cond 
+		((= thecommandstart "EXIT") (cst_resetcol))
+		((= thecommandstart "_EXIT") (cst_resetcol))		
+		((= thecommandstart "exit") (cst_resetcol))
+		((= thecommandstart "_exit") (cst_resetcol))		
+		((= thecommandstart "CLOSE") (cst_resetcol))
+		((= thecommandstart "_CLOSE") (cst_resetcol))
+		((= thecommandstart "close") (cst_resetcol))
+		((= thecommandstart "_close") (cst_resetcol))
+		((= thecommandstart "_quit") (cst_resetcol))
+		((= thecommandstart "quit") (cst_resetcol))
+		((= thecommandstart "QUIT") (cst_resetcol))
+		((= thecommandstart "_QUIT") (cst_resetcol))
+			)
+	(princ)
+	)
+
 ;#####################
 ;###    On Load    ###
 ;#####################
 
-
-; This bit checks out the cursor colors at lisp load and tries to correct anything that goes wrong.
-
-;if user crosshair colors are not backed up: then back them up!
-(if (eq (vl-bb-ref 'cst_model_color) nil)
-	(cst_backupcol)
-	)
-
-
-;if old crosshair colors are magenta: then reset them
-(if (eq (vl-bb-ref 'cst_model_color) 16711935)
-	(cst_resetcol)
-	)
-
-
+;make this for when switching documents & on load?
 ;if current crosshair is magenta: then reset the old colors
 (if (= (vlax-variant-value (vlax-make-variant (vla-get-ModelCrosshairColor pref_pointer) vlax-vblong)) 16711935)
 	(cst_crosshair_off)
