@@ -1,6 +1,13 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+v0.4.170
+---
+
+Changed: Sucked the bloat right out of cst_crosshair_grace.
+Bugfix: Will not get trapped in cst_lay anymore
+Bugfix: Crosshair color is awesome.  Switches colors between different drawings if needed.
+
 
 v0.4.112
 ---
