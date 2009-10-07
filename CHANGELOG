@@ -1,6 +1,13 @@
 	Constructions Changelog
 	Copyright (c) 2009 Matthew D. Jordan
 
+v0.4.???
+---
+
+Added: Crosshair reset function - should only be needed in case of an autocad crash while the crosshair is the cst_crosshair color.
+
+
+
 v0.4.170
 ---
 

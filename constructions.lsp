@@ -1,4 +1,4 @@
-;	Constructions v0.4.170
+;	Constructions v0.4.172
 ;	-A scratchpad layer utility for Autocad
 ;
 ;	Tested on Autocad 2008-2010
@@ -34,7 +34,10 @@
 
 (vl-load-com)
 (setvar "cmdecho" 0)
-(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
+;only load this object once
+(if (= pref_pointer nil)
+	(setq pref_pointer (vla-get-display (vla-get-Preferences (vlax-get-acad-object))))
+	)
 
 
 ;#######################################
@@ -160,8 +163,11 @@
 
 
 (defun cst_reset_color ()
-	;reset default crosshair colors :)
-	(princ "oops! reset the default crosshair colors")
+	;reset default crosshair colors (could clobber user's crosshair
+	;luckily it's not needed unless there is an acad crash)
+	(vl-bb-set 'cst_model_color "16777215")
+	(vl-bb-set 'cst_layout_color "0")
+	(cst_crosshair_off)
 	)
 
 
@@ -192,9 +198,9 @@
 	)
 
 
-;#####################
-;###   On Load 2   ###
-;#####################
+;##########################
+;###   On Load part 2   ###
+;##########################
 
 
 (cst_load nil nil)	
@@ -209,7 +215,6 @@
 
 (vlr-docmanager-reactor
 	nil '((:vlr-documentBecameCurrent . cst_load)))
-
 
 ;############################
 ;###   If Autocad Exits   ###

@@ -4,7 +4,6 @@
 
 ---
 Bugs:
-	dst (laydel) pops up text window when deleting blocks or dimensions.  Rewrite using cst_clean & purge command
-	cannot purge after dimensions have been created on that layer.!!!!
+	dst (laydel) pops up text window when deleting blocks or dimensions.  Rewrite using cst_clean & purge command - cannot purge after dimensions have been created on that layer.!!!!
 
-Implement a crosshair reset function.
+Make a reactor that re-backs-up the user's crosshair colors if they change the colors.  (otherwise their crosshair colors can get clobbered)
