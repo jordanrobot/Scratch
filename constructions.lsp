@@ -1,4 +1,5 @@
-;	Constructions v0.5.189
+;	Constructions v0.6
+;
 ;	-A scratchpad layer utility for Autocad
 ;
 ;	Tested on Autocad 2008-2010
@@ -7,7 +8,6 @@
 ;
 ;	2009 Matthew D. Jordan :  http://scenic-shop.com
 ;	This file is provided "as is" by the author.
-;   The authorship and url must remain with the copied function. 
 ;
 ;	command: CST - switches between layers, creates the layer
 ;	if it doesn't already exist.  Uses a SysVarWillChange reactor
@@ -16,12 +16,12 @@
 ;	cst will work even when changing layers via the layer
 ;	dropdown box or from the layer dialogue window
 ;
-;	command: DST - deletes the temporary layer
+;	command: EST - deletes the temporary layer
 ;
 ;	command: 1` - jumps to previous layer
 ;
 ;	automatic crosshair color functionality can be enabled by
-;	loading the companion file - "constructions color.lsp"
+;	loading the companion file - "constructionsColor.lsp"
 
 
 ;###################
@@ -31,7 +31,7 @@
 (vl-load-com)
 (setvar "cmdecho" 0)
 
-
+(setq debug 1)
 ;#######################################
 ;###   Temoporary Layer Properties   ###
 ;#######################################
