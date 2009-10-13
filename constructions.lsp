@@ -1,4 +1,4 @@
-;	Constructions v0.6
+;	Constructions v0.6.53
 ;
 ;	-A scratchpad layer utility for Autocad
 ;
@@ -24,17 +24,21 @@
 ;	loading the companion file - "constructionsColor.lsp"
 
 
+
 ;###################
 ;###   On Load   ###
 ;###################
 
+
 (vl-load-com)
 (setvar "cmdecho" 0)
 
-(setq debug 1)
+
+
 ;#######################################
 ;###   Temoporary Layer Properties   ###
 ;#######################################
+
 
 ;layer name
 (setq cstLayer "constructions")
@@ -48,20 +52,26 @@
 	(setq PreviousLayer "0")
 	)
 
+(setvar "cmdecho" 1)
+
+
+
 ;####################
 ;###   Commands   ###
 ;####################
+
 
 (defun c:cst()
 	(setvar "cmdecho" 0)
 	;if the cstLayer layer exists...
 	(if (tblsearch "LAYER" cstLayer)
 		(if (= (getvar "clayer") cstLayer)
-			(setvar "clayer" PreviousLayer)
-			(setvar "clayer" cstLayer)
+			(cst_jumpout)
+			(cst_jumpin)
 			)
 		(command "_.layer" "make" cstLayer "color" cstLayerCol "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" cstLayerLwt "" "")
 		)
+	(setvar "cmdecho" 1)
 	(princ)
 	)
 
@@ -70,18 +80,43 @@
 	(setvar "cmdecho" 0)
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cstLayer)) (quit))
-	(setvar "clayer" PreviousLayer)
-
+	(cst_jumpout)
 	(command "_laydel" "n" cstLayer "" "yes")
-	
+	(setvar "cmdecho" 1)
 	(princ)
 	)
 
-;-putting this here until I pull Previous Layer out of this file.
+
+;-bonus - switches you to previous layer.
 (defun c:1`()
-	(setvar "clayer" PreviousLayer )
+	(setvar "cmdecho" 0)
+	(cst_jumpout)
+	(setvar "cmdecho" 1)
 	(princ)
 	)
+
+
+(defun cst_jumpout( / err )
+	(setq err (vl-catch-all-apply 'setvar (list "clayer" PreviousLayer)))
+	(if (vl-catch-all-error-p err)
+		(progn
+			(command "-layer" "thaw" PreviousLayer "" "")
+			(setvar "clayer" PreviousLayer)
+			)
+ 		)
+	)
+
+
+(defun cst_jumpin( / err )
+	(setq err (vl-catch-all-apply 'setvar (list "clayer" cstLayer)))
+	(if (vl-catch-all-error-p err)
+		(progn
+			(command "-layer" "thaw" cstLayer "" "")
+			(setvar "clayer" cstLayer)
+			)
+		)
+	)
+
 
 
 ;###################
@@ -90,27 +125,18 @@
 
 
 ;--- reactor watches for the clayer variable ---
-(vlr-SysVar-Reactor
-	nil '((:vlr-SysVarWillChange . cst_set_origlay))
-	)
-
-;--- backs up the original layer before changing to cstLayer ---
-(defun cst_set_origlay (reactor args)
-	(if (member (strcase (car args)) '("CLAYER"))
-		(if (not (= (getvar "clayer") cstLayer))
-			(setq PreviousLayer (getvar "clayer"))			
-			)
+(if (= cst_clayerReactor nil)
+	(progn
+		(vlr-SysVar-Reactor nil '((:vlr-SysVarWillChange . cst_R_watchclayer)))
+		(setq cst_clayerReactor 1)
 		)
 	)
 
-
-;###################
-;###   Exiting   ###
-;###################
-
-(defun *error* (msg)
-	(setvar "cmdecho" 0)
-	(setvar "clayer" PreviousLayer)
-	(princ msg)
-	(princ)
+;--- backs up the original layer before changing to cstLayer ---
+(defun cst_R_watchclayer (reactor args)
+	(if (member (strcase (car args)) '("CLAYER"))
+		(if (not (= (getvar "clayer") cstLayer))
+			(setq PreviousLayer (getvar "clayer"))		
+			)
+		)
 	)

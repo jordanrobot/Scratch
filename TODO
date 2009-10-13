@@ -1,9 +1,0 @@
-	Constructions Todo
-	Copyright (c) 2009 Matthew D. Jordan
-
-
----
-Bugs:
-	dst (laydel) pops up text window when deleting blocks or dimensions.  Rewrite using cst_clean & purge command - cannot purge after dimensions have been created on that layer.!!!!
-
-Make a reactor that re-backs-up the user's crosshair colors if they change the colors.  (otherwise their crosshair colors can get clobbered)
