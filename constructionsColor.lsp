@@ -1,4 +1,4 @@
-;	Constructions Color v0.6
+;	Constructions Color v0.6.53
 ;
 ;	-A scratchpad layer utility for Autocad
 ;	-Optional crosshair color switcher
@@ -15,9 +15,9 @@
 ;	The color on/off is determined by the current layer.
 
 
-;###################
-;###   On Load   ###
-;###################
+;#########################
+;###   Initial Stuff   ###
+;#########################
 
 (setvar "cmdecho" 0)
 (vl-load-com)
@@ -29,7 +29,7 @@
 ; cst's crosshair color -> default is magenta (OLE color code)
 (vl-bb-set 'cstCrosshairColor "16711935")
 
-;(setq debug 1)
+
 
 ;####################
 ;###   Reactors   ###
@@ -46,11 +46,11 @@
 
 ;--- if sysvar is "CLAYER" send to toggle_color ---
 (defun cst_clayer_filter (reactor args)
-
 	(if (member (strcase (car args)) '("CLAYER"))
 		(cst_toggle_color nil nil)
 		)
 	)
+
 
 ;--- reactor runs cst_load when switching between documents ---
 (if (= cst_docManagerReactor nil)
@@ -62,7 +62,6 @@
 
 ;--- If cst_lay is current, change crosshair color ---
 (defun cst_toggle_color (reactor args)
-
 	(if (= (getvar "clayer") cstLayer)
 		(cst_crosshair_on)
 		(cst_crosshair_off)
@@ -75,9 +74,9 @@
 ;###   Functions   ###
 ;#####################
 
+
 ;--- verify fidelity of backups & look for updated crosshair colors
 (defun cst_backup_check ()
-
 (cond
 	;backup = cstCrosshairColor -> reset colors
 	;(in case of acad crash while colors are changed, this will reset to default next time lisp is loaded)
@@ -103,6 +102,7 @@
 	)	
 	)
 
+
 ;--- back up user's crosshair colors to the blackboard namespace ---
 (defun cst_backup_color ( / cstCurrentModelColor cstCurrentLayoutColor )
 
@@ -118,7 +118,6 @@
 
 ;--- reset default crosshair colors (emergency use only)
 (defun cst_reset_color ()
-
 	(vl-bb-set 'cstOldModelColor "16777215")
 	(vl-bb-set 'cstOldLayoutColor "0")
 	)
@@ -153,22 +152,17 @@
 
 
 ;if no backup -> back it up, yo!
-
 (if (not (and (vl-bb-ref 'cstOldLayoutColor) (vl-bb-ref 'cstOldModelColor)))
 	(cst_backup_color)
 	)
 
 (cst_toggle_color nil nil)
+(setvar "cmdecho" 1)
+
 
 ;###################
 ;###   Exiting   ###
 ;###################
-
-(defun *error* (msg)
-	(setvar "cmdecho" 1)
-	(cst_crosshair_off)
-	(princ msg)
-	)
 
 
 ; --- reactor watches for exits, closes & ends - sets crosshair back to default ---
