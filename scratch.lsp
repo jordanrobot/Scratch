@@ -1,4 +1,4 @@
-;	Constructions v0.6.53
+;	Scratch v0.8.0
 ;
 ;	-A scratchpad layer utility for Autocad
 ;
@@ -6,7 +6,7 @@
 ;	May require Autocad Express Tools
 ;	I haven't gotten around to checking compatibility.
 ;
-;	2009 Matthew D. Jordan :  http://scenic-shop.com
+;	2009-2010 Matthew D. Jordan :  http://scenic-shop.com
 ;	This file is provided "as is" by the author.
 ;
 ;	command: CST - switches between layers, creates the layer
@@ -16,12 +16,13 @@
 ;	cst will work even when changing layers via the layer
 ;	dropdown box or from the layer dialogue window
 ;
-;	command: EST - deletes the temporary layer
+;	command: EST - deletes all objects in the temporary layer with a confirmation
+;	command: EST` - deletes all objects in the temporary layer without a confirmation
 ;
 ;	command: 1` - jumps to previous layer
 ;
 ;	automatic crosshair color functionality can be enabled by
-;	loading the companion file - "constructionsColor.lsp"
+;	loading the companion file - "scratchColor.lsp"
 
 
 
@@ -69,23 +70,75 @@
 			(cst_jumpout)
 			(cst_jumpin)
 			)
+		
 		(command "_.layer" "make" cstLayer "color" cstLayerCol "" "ON" "" "Ltype" "" "" "Plot" "No" "" "LWeight" cstLayerLwt "" "")
 		)
 	(setvar "cmdecho" 1)
 	(princ)
 	)
 
-
-(defun c:est()
+;empty the cstLayer
+(defun est( / tmp)
 	(setvar "cmdecho" 0)
 	;abort if the constructions layer is not present
 	(if (not (tblsearch "LAYER" cstLayer)) (quit))
 	(cst_jumpout)
-	(command "_laydel" "n" cstLayer "" "yes")
+;	(command "_laydel" "n" cstLayer "" "yes")
+	(setq tmp (ssget "X" (list (cons 8 cstLayer))))
+	(command ".erase" tmp "")
+
 	(setvar "cmdecho" 1)
 	(princ)
 	)
 
+;a command wrapper for the est function
+(defun c:est`()
+	(est)
+)
+
+;preview before emptying the cstLayer
+(defun c:est ( / temp_view )
+	(setvar "cmdecho" 0)
+	(command "undo" "begin")
+	(setq temperror *error*)
+	(setq *error* est`trap)
+
+	(setq temp_view "est-autogen-159839sha29jfisnk")
+
+	(command "-view" "save" temp_view "y")
+	(command "-view" "settings" "layer" temp_view "save" "" "")
+	(command "-layer" "off" "*" "y" "")
+	(command "-layer" "thaw" cstLayer "on" cstLayer "")
+	(command "Zoom" "extents" "zoom" "s" "0.95x")
+
+
+	(initget "Yes No")
+	(setq answer (getkword "\nEmpty constructions layer: [Yes/No] <No>:"))
+	(if (= answer "Yes" )
+		(progn
+			(est)
+			(command "-view" "restore" temp_view)
+			(command "-view" "delete" temp_view)		
+		)
+		(progn
+			(command "-view" "restore" temp_view)
+			(command "-view" "delete" temp_view)
+		)
+	)
+	(setq *error* temperror)
+	(command "undo" "end")
+	(setvar "cmdecho" 1)
+	(princ)
+)
+
+(defun est`trap (errmsg)
+	(command "-view" "restore" temp_view)
+	(command "-view" "delete" temp_view)
+	(setq *error* temperr)
+	(command "undo" "end")
+	(setvar "cmdecho" 1)
+   (princ)
+)
 
 ;-bonus - switches you to previous layer.
 (defun c:1`()
@@ -115,6 +168,7 @@
 			(setvar "clayer" cstLayer)
 			)
 		)
+		(command "-layer" "on" cstLayer "")
 	)
 
 

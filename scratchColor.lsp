@@ -1,4 +1,4 @@
-;	Constructions Color v0.6.53
+;	Scratch Color v0.6.54
 ;
 ;	-A scratchpad layer utility for Autocad
 ;	-Optional crosshair color switcher
