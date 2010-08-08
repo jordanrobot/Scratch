@@ -1,7 +1,7 @@
 ;####################
 ;###   Scratch!   ###
 ;####################
-; version 1.2.3
+; version 1.2.4
 ;
 ;	-A scratchpad layer utility for Autocad
 ;
@@ -16,11 +16,13 @@
 ;#################
 ; Note: the ` symbol is a backtick (next to the 1 key)
 ;
-;	command: `` - toggle between layers
-;	command: e` - clear scratchpad (menu)
+;	command: `` - toggle between scratchpad layer and the current layer
+;	command: e` - erase scratchpad (menu)
+;			option: a - erase everything in scratchpad layer
+;			option: p - preview all objects in scratchpad layer
+;			option: s - erase only selected objects in scratchpad layer
 ;
-;	command: x` - move selected objects to the temp layer
-; command: c` - copy selected objects to the temp layer
+;	command: m` - move selected objects to the scratchpad layer
 ;	command: 1` - jumps to previous layer
 
 
@@ -216,10 +218,10 @@
 
 
 ;move selected objects to the scratchLayer
-(defun c:x`( / eset )
+(defun c:m`( / eset )
 	(while (not eset)(setq eset (ssget)))
 	(if (not (tblsearch "LAYER" scratchLayer)) 
-					 (command "_.layer" "new" scratchLayer "color" scratchLayerColor "" "ON" "" "Ltype" scratchLayerLineT "" "Plot" scratchLayerPlot "" "LWeight" scratchLayerWeight "" "")
+				(command "_.layer" "make" scratchLayer "color" scratchLayerColor "" "ON" "" "Ltype" scratchLayerLineT "" "Plot" scratchLayerPlot "" "LWeight" scratchLayerWeight "" "")
 	) ;if
 	(command ".chprop" "_p" "" "_la" "constructions" "")
 	(princ)
