@@ -1,16 +1,16 @@
-Scratch v1.2.4
+Scratch v1.2.5
 ==============
 A scratchpad layer utility for Autocad
 
-2009-2010 Matthew D. Jordan : http://scenic-shop.com
+2009-2011 Matthew D. Jordan : http://scenic-shop.com
 
 Released under the MIT License
 
-Tested on Autocad 2008-2010
+Tested on Autocad 2008-2011
 
 Commands
 --------
-* `` : (backticks) switches between the current layer and the scratchpad layer.  It will create the scratchpad layer if it doesn't already exist. Uses a SysVarWillChange reactor (watching the clayer variable) to backup the original layer before switching to the scratchpad layer. This ensures that the color functions will work even when changing layers via the layer dropdown box or from the layer dialogue window
+* ` : (backticks) switches between the current layer and the scratchpad layer.  It will create the scratchpad layer if it doesn't already exist. Uses a SysVarWillChange reactor (watching the clayer variable) to backup the original layer before switching to the scratchpad layer. This ensures that the color functions will work even when changing layers via the layer dropdown box or from the layer dialogue window
 
 * e` : erase scratchpad, with options!
 	option: a - erase everything in scratchpad layer

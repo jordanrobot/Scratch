@@ -1,12 +1,13 @@
+(prompt "\nscratch.lsp")
 ;####################
 ;###   Scratch!   ###
 ;####################
-; version 1.2.4
+; version 1.2.5
 ;
 ;	-A scratchpad layer utility for Autocad
 ;
-;	2009-2010 Matthew D. Jordan :  http://scenic-shop.com
-;	Tested on Autocad 2008-2010
+;	2009-2011 Matthew D. Jordan :  http://scenic-shop.com
+;	Tested on Autocad 2008-2011
 ; Released under the MIT License - full text at bottom of file.
 
 
@@ -16,7 +17,7 @@
 ;#################
 ; Note: the ` symbol is a backtick (next to the 1 key)
 ;
-;	command: `` - toggle between scratchpad layer and the current layer
+;	command: ` - toggle between scratchpad layer and the current layer
 ;	command: e` - erase scratchpad (menu)
 ;			option: a - erase everything in scratchpad layer
 ;			option: p - preview all objects in scratchpad layer
@@ -165,7 +166,7 @@
 ;####################
 
 
-(defun c:``()
+(defun c:`()
 	(setvar "cmdecho" 0)
 	;if the scratchLayer layer exists...
 	(if (tblsearch "LAYER" scratchLayer)
@@ -393,7 +394,7 @@
 ) ;defun
 	
 	
-; Copyright (c) 2009-2010 Matthew D. Jordan
+; Copyright (c) 2009-2011 Matthew D. Jordan
 ;
 ; Permission is hereby granted, free of charge, to any person obtaining a copy
 ; of this software and associated documentation files (the "Software"), to deal
